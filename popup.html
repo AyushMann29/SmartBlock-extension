@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SmartBlock & Tracker Detector</title>
+  <link rel="stylesheet" href="popup.css">
+  <script src="popup.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <img src="icon.png" alt="SmartBlock Logo" class="logo-img">
+        <h1>SmartBlock</h1>
+      </div>
+      <div class="stats">
+        <div class="stat-item">
+          <span id="blockCount">0</span>
+          <span class="stat-label">Blocked</span>
+        </div>
+        <div class="stat-item">
+          <span id="trackerCount">0</span>
+          <span class="stat-label">Trackers</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="adblock">
+        <svg class="tab-icon" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM4 12c0-4.42 3.58-8 8-8 1.85 0 3.55.63 4.9 1.69L5.69 16.9C4.63 15.55 4 13.85 4 12zm8 8c-1.85 0-3.55-.63-4.9-1.69L18.31 7.1C19.37 8.45 20 10.15 20 12c0 4.42-3.58 8-8 8z"/>
+        </svg>
+        Ad Blocker
+      </button>
+      <button class="tab-btn" data-tab="trackers">
+        <svg class="tab-icon" viewBox="0 0 24 24">
+          <path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-11h2V6h-2v3z"/>
+        </svg>
+        Trackers
+      </button>
+      <button class="tab-btn" data-tab="shortener">
+        <svg class="tab-icon" viewBox="0 0 24 24">
+          <path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8z"/>
+        </svg>
+        URL Shortener
+      </button>
+      <button class="tab-btn" data-tab="settings">
+        <svg class="tab-icon" viewBox="0 0 24 24">
+          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+        </svg>
+        Settings
+      </button>
+    </div>
+
+    <div class="tab-content active" id="adblock">
+      <div class="current-site">
+        <div class="site-info">
+          <img id="siteFavicon" src="" alt="" class="favicon">
+          <div class="site-details">
+            <span id="siteUrl" class="site-url">Current site</span>
+            <div class="protection-status">
+              <span id="blockStatus" class="status-label">Protection active</span>
+            </div>
+          </div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="toggleBlocking" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="section allowed-sites">
+        <div class="section-header">
+          <h3>Allowed Sites</h3>
+          <button id="clearAllowed" class="clear-btn">Clear All</button>
+        </div>
+        <div class="site-list-container">
+          <ul id="allowedSitesList" class="site-list">
+            <!-- Sites will be populated here -->
+          </ul>
+          <div id="empty-sites" class="empty-message">No sites in whitelist</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="trackers">
+      <div class="section">
+        <h3>Trackers Detected</h3>
+        <div class="tracker-stats">
+          <div id="tracker-chart" class="tracker-chart"></div>
+        </div>
+        <div class="tracker-list-container">
+          <ul id="trackerList" class="tracker-list">
+            <!-- Trackers will be populated here -->
+          </ul>
+          <div id="empty-trackers" class="empty-message">No trackers detected</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="shortener">
+      <div class="section">
+        <h3>URL Shortener</h3>
+        <div class="shortener-form">
+          <input type="url" id="urlInput" placeholder="Enter a long URL to shorten" class="url-input">
+          <button id="shortenButton" class="btn shorten-btn">Shorten</button>
+        </div>
+        
+        <div id="resultContainer" class="result-container" style="display: none;">
+          <div class="result-header">
+            <span>Shortened URL:</span>
+            <button id="copyButton" class="copy-btn">Copy</button>
+          </div>
+          <div id="shortUrlResult" class="short-url-result"></div>
+        </div>
+        
+        <div class="expiration-container">
+          <label for="expirationSelect">Link expires after:</label>
+          <select id="expirationSelect" class="expiration-select">
+            <option value="0">Never</option>
+            <option value="1">1 day</option>
+            <option value="7">7 days</option>
+            <option value="30">30 days</option>
+            <option value="90">90 days</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="section">
+        <div class="section-header">
+          <h3>Recent URLs</h3>
+          <button id="clearHistory" class="clear-btn">Clear History</button>
+        </div>
+        
+        <div class="url-list-container">
+          <ul id="recentUrlsList" class="url-list">
+            <!-- Recent URLs will be populated here -->
+          </ul>
+          <div id="empty-urls" class="empty-message">No shortened URLs yet</div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3>Statistics</h3>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-value" id="urlsShortened">0</div>
+            <div class="stat-label">URLs Shortened</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="urlsAccessed">0</div>
+            <div class="stat-label">Links Clicked</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="charsSaved">0</div>
+            <div class="stat-label">Characters Saved</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="settings">
+      <div class="section">
+        <h3>Extension Settings</h3>
+        <div class="setting-item">
+          <div class="setting-info">
+            <strong>Block All Trackers</strong>
+            <span class="setting-desc">Block all known trackers on all sites</span>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="blockAllTrackers" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <div class="setting-info">
+            <strong>Fingerprint Protection</strong>
+            <span class="setting-desc">Prevent browser fingerprinting</span>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="fingerprintProtection">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <div class="setting-info">
+            <strong>Auto-Update Lists</strong>
+            <span class="setting-desc">Keep blocking lists up to date</span>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="autoUpdateLists" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <div class="setting-info">
+            <strong>Show Notifications</strong>
+            <span class="setting-desc">Show alerts for high-risk trackers</span>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="showNotifications">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <button id="resetSettings" class="btn reset-btn">Reset All Settings</button>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-stats">
+        <div class="data-saved">
+          <span>Data saved:</span>
+          <strong id="dataSaved">0 MB</strong>
+        </div>
+        <div class="time-saved">
+          <span>Time saved:</span>
+          <strong id="timeSaved">0s</strong>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <style>
+    /* URL Shortener Specific Styles */
+    .url-input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .shorten-btn {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .result-container {
+      background-color: var(--background-secondary);
+      border-radius: var(--border-radius);
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .copy-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .copy-btn:hover {
+      text-decoration: underline;
+    }
+
+    .short-url-result {
+      word-break: break-all;
+      font-family: monospace;
+      font-size: 14px;
+      padding: 8px;
+      background: white;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .expiration-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .expiration-select {
+      padding: 6px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background-color: white;
+    }
+
+    .url-list-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .short-url {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .original-url {
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .url-actions {
+      display: flex;
+      margin-top: 8px;
+      gap: 8px;
+    }
+
+    .url-action-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .url-action-btn:hover {
+      text-decoration: underline;
+    }
+
+    .url-action-btn.delete {
+      color: var(--danger);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .stat-box {
+      background-color: var(--background-secondary);
+      border-radius: var(--border-radius);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--primary);
+    }
+
+    .shortener-notification {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 16px;
+      border-radius: var(--border-radius);
+      background-color: var(--background-secondary);
+      box-shadow: var(--shadow);
+      font-size: 14px;
+      z-index: 100;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .shortener-notification.success {
+      background-color: var(--success);
+      color: white;
+    }
+
+    .shortener-notification.error {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .shortener-notification.fade-out {
+      animation: fadeOut 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, 20px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translate(-50%, 0); }
+      to { opacity: 0; transform: translate(-50%, 20px); }
+    }
+  </style>
+</body>
+</html>

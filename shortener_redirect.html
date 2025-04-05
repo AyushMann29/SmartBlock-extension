@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+      background-color: #f8f9fa;
+      color: #202124;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    
+    .container {
+      max-width: 500px;
+      background-color: white;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+    
+    .logo {
+      margin-bottom: 1.5rem;
+    }
+    
+    .logo img {
+      width: 48px;
+      height: 48px;
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #4285F4;
+    }
+    
+    p {
+      margin-bottom: 1.5rem;
+      color: #5f6368;
+      line-height: 1.5;
+    }
+    
+    .loader {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      margin-bottom: 1rem;
+    }
+    
+    .loader:after {
+      content: " ";
+      display: block;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 6px solid #4285F4;
+      border-color: #4285F4 transparent #4285F4 transparent;
+      animation: loader 1.2s linear infinite;
+    }
+    
+    @keyframes loader {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .destination {
+      background-color: #f1f3f4;
+      padding: 0.75rem;
+      border-radius: 4px;
+      font-family: monospace;
+      word-break: break-all;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+    
+    .button {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: #4285F4;
+      color: white;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    
+    .button:hover {
+      background-color: #3367D6;
+    }
+    
+    .error {
+      color: #EA4335;
+      font-weight: 500;
+    }
+    
+    .info {
+      font-size: 0.85rem;
+      color: #5f6368;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="icon.png" alt="SmartBlock">
+    </div>
+    
+    <h1>Redirecting you securely</h1>
+    
+    <div class="loader"></div>
+    
+    <p>You're being redirected through SmartBlock's secure URL shortener.</p>
+    
+    <div id="destination-container" style="display: none;">
+      <p>Destination:</p>
+      <div id="destination" class="destination"></div>
+      
+      <a id="proceed-link" href="#" class="button">Proceed</a>
+    </div>
+    
+    <div id="error-container" style="display: none;">
+      <p class="error">This shortened URL is invalid or has expired.</p>
+      <p>Please check the link and try again.</p>
+    </div>
+    
+    <p class="info">SmartBlock URL shortener protects your privacy by not tracking clicks or collecting personal data.</p>
+  </div>
+  
+  <script src="shortener_redirect.js"></script>
+</body>
+</html>
