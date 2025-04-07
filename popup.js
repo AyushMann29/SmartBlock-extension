@@ -52,11 +52,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = new URL(tab.url);
         currentSiteUrl = tab.url;
         currentSiteDomain = url.hostname;
-        
-        // Update UI with site info
+  
         siteUrl.textContent = currentSiteDomain;
-        siteFavicon.src = `chrome://favicon/${tab.url}`;
-        
+  
+        // ✅ Secure favicon fetching
+        siteFavicon.src = `https://www.google.com/s2/favicons?sz=64&domain=${url.hostname}`;
+        siteFavicon.onerror = () => {
+          siteFavicon.src = "icon.png";
+        };
+  
         return { url: tab.url, domain: url.hostname };
       }
     } catch (error) {
@@ -64,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return null;
   };
+  
 
   // Update toggle state for current site
   const updateToggleState = async () => {

@@ -1,21 +1,22 @@
+console.log("SmartBlock content.js running on:", window.location.href);
+
 // Known tracker domains to watch for
 const knownTrackers = [
-  "google-analytics.com",
-  "doubleclick.net",
-  "facebook.com",
-  "adservice.google.com",
-  "googlesyndication.com",
-  "amazon-adsystem.com",
-  "googletagmanager.com",
-  "scorecardresearch.com",
-  "analytics.twitter.com",
-  "adsrvr.org",
-  "criteo.com",
-  "outbrain.com",
-  "taboola.com",
-  "hotjar.com",
-  "cloudfront.net"
+  "doubleclick.net", "googlesyndication.com", "google-analytics.com",
+  "adservice.google.com", "ads.google.com", "pagead2.googlesyndication.com",
+  "googletagmanager.com", "googleadservices.com", "facebook.net", "facebook.com",
+  "connect.facebook.net", "analytics.twitter.com", "t.co", "amazon-adsystem.com",
+  "adsrvr.org", "adnxs.com", "criteo.com", "outbrain.com", "taboola.com",
+  "hotjar.com", "scorecardresearch.com", "quantserve.com", "moatads.com",
+  "contextweb.com", "media.net", "openx.net", "pubmatic.com", "mathtag.com",
+  "bluekai.com", "advertising.com", "serving-sys.com", "smartadserver.com",
+  "zedo.com", "tradedoubler.com", "rubiconproject.com", "yieldmo.com",
+  "appsflyer.com", "mixpanel.com", "segment.io", "optimizely.com", "newrelic.com",
+  "crazyegg.com", "clicktale.net", "brightcove.net", "demdex.net", "adform.net",
+  "netmng.com", "ml314.com", "trustarc.com", "truste.com", "privacy-mgmt.com",
+  "cloudfront.net", "yimg.com", "yahoo.com", "bing.com", "pinterest.com"
 ];
+
 
 // Configuration and state
 let isObserving = false;
@@ -29,30 +30,40 @@ initializeProtection().catch(console.error);
 
 async function initializeProtection() {
   try {
-    // Check if we should be active on this page
     if (!shouldProtectPage()) {
       console.log('Protection not needed for this page');
       return;
     }
 
-    // Load user settings
     const { userSettings } = await chrome.storage.local.get('userSettings');
     
-    // Enable fingerprint protection if configured
     if (userSettings && userSettings.fingerprintProtection) {
       fingerprintProtectionEnabled = true;
       applyFingerprintProtection();
     }
-    
-    // Start resource monitoring
+
+    // Start performance observer
     if (!userSettings || userSettings.trackerProtection !== false) {
       startTrackingObserver();
+
+      // ✅ ADD FETCH INTERCEPTION HERE
+      const originalFetch = window.fetch;
+      window.fetch = function() {
+        const url = arguments[0];
+        try {
+          if (typeof url === 'string' && knownTrackers.some(tracker => url.includes(tracker))) {
+            const hostname = (new URL(url)).hostname;
+            console.log("Tracker detected in fetch:", hostname);
+            chrome.runtime.sendMessage({ type: "trackerDetected", hostname });
+          }
+        } catch (e) {
+          console.warn("Failed to parse fetch URL:", url);
+        }
+        return originalFetch.apply(this, arguments);
+      };
     }
-    
-    // Listen for settings changes
+
     chrome.storage.onChanged.addListener(handleSettingsChange);
-    
-    // Add unload handler
     window.addEventListener('beforeunload', handlePageUnload);
     
     console.log('SmartBlock protection initialized');
@@ -60,6 +71,26 @@ async function initializeProtection() {
     console.error('Failed to initialize protection:', error);
   }
 }
+
+const originalXHR = window.XMLHttpRequest;
+window.XMLHttpRequest = function() {
+  const xhr = new originalXHR();
+  const open = xhr.open;
+  xhr.open = function(method, url) {
+    try {
+      if (typeof url === 'string' && knownTrackers.some(tracker => url.includes(tracker))) {
+        const hostname = (new URL(url)).hostname;
+        console.log("Tracker detected in XHR:", hostname);
+        chrome.runtime.sendMessage({ type: "trackerDetected", hostname });
+      }
+    } catch (e) {
+      console.warn("Failed to parse XHR URL:", url);
+    }
+    return open.apply(this, arguments);
+  };
+  return xhr;
+};
+
 
 function shouldProtectPage() {
   // Skip protection for certain page types
