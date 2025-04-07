@@ -15,8 +15,16 @@
     "notifications",
     "contextMenus",
     "clipboardWrite",
-    "clipboardRead"
+    "clipboardRead",
+    "declarativeNetRequestWithHostAccess"
   ],
+  "declarative_net_request": {
+  "rule_resources": [{
+    "id": "rules",
+    "enabled": true,
+    "path": "rules.json"
+  }]
+},
   "host_permissions": [
     "*://*/*"
   ],
@@ -48,3 +56,4 @@
     "extension_pages": "script-src 'self'; object-src 'self'"
   }
 }
+

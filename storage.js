@@ -69,9 +69,7 @@ export async function initializeStorage() {
             });
         }
         
-        console.log('Storage initialized successfully');
     } catch (error) {
-        console.error('Storage initialization failed:', error);
         throw error;
     }
 }
@@ -83,7 +81,6 @@ export async function initializeStorage() {
  */
 async function migrateSettings(previousVersion) {
     try {
-        console.log(`Migrating settings from v${previousVersion} to v${CURRENT_VERSION}`);
         
         // Get existing settings
         const { userSettings } = await chrome.storage.local.get(STORAGE_KEYS.SETTINGS);
@@ -119,7 +116,6 @@ async function migrateSettings(previousVersion) {
             })
         ]);
         
-        console.log(`Settings migrated successfully to v${CURRENT_VERSION}`);
     } catch (error) {
         console.error('Settings migration failed:', error);
         throw error;
@@ -147,7 +143,6 @@ export async function saveSettings(settings) {
             [STORAGE_KEYS.SETTINGS]: validated
         });
         
-        console.log('Settings saved successfully:', validated);
         return true;
     } catch (error) {
         console.error('Failed to save settings:', error);
@@ -214,7 +209,6 @@ export async function resetSettings() {
             [STORAGE_KEYS.SETTINGS]: DEFAULT_SETTINGS
         });
         
-        console.log('Settings reset to defaults');
         return true;
     } catch (error) {
         console.error('Failed to reset settings:', error);

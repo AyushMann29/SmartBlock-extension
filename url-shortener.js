@@ -35,6 +35,7 @@ let shortenerMetrics = {
 export async function initializeUrlShortener() {
     try {
         // Create context menu item for shortening URLs
+        await chrome.contextMenus.remove('shortenUrl');
         if (chrome.contextMenus) {
             chrome.contextMenus.create({
                 id: "shortenUrl",
@@ -61,10 +62,14 @@ export async function initializeUrlShortener() {
                                 })
                                 .catch(console.error);
                         })
+                
                         .catch(console.error);
                 }
+                
             });
+            
         }
+        
         
         // Load analytics metrics
         const { shortenerStats } = await chrome.storage.local.get("shortenerStats");
@@ -87,7 +92,6 @@ export async function initializeUrlShortener() {
             ["blocking"]
         );
         
-        console.log("URL shortener initialized");
         
     } catch (error) {
         console.error("Failed to initialize URL shortener:", error);
@@ -333,7 +337,6 @@ async function cleanExpiredUrls() {
         
         if (removedCount > 0) {
             await chrome.storage.local.set({ [SHORTENER_CONFIG.STORAGE_KEY]: urlMappings });
-            console.log(`Cleaned up ${removedCount} expired URLs`);
         }
         
         return removedCount;
@@ -370,7 +373,6 @@ async function pruneOldMappings() {
             }
             
             await chrome.storage.local.set({ [SHORTENER_CONFIG.STORAGE_KEY]: newMappings });
-            console.log(`Pruned ${removedCount} old URL mappings`);
         }
         
         return removedCount;

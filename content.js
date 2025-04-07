@@ -1,4 +1,3 @@
-console.log("SmartBlock content.js running on:", window.location.href);
 
 // Known tracker domains to watch for
 const knownTrackers = [
@@ -31,7 +30,6 @@ initializeProtection().catch(console.error);
 async function initializeProtection() {
   try {
     if (!shouldProtectPage()) {
-      console.log('Protection not needed for this page');
       return;
     }
 
@@ -53,7 +51,6 @@ async function initializeProtection() {
         try {
           if (typeof url === 'string' && knownTrackers.some(tracker => url.includes(tracker))) {
             const hostname = (new URL(url)).hostname;
-            console.log("Tracker detected in fetch:", hostname);
             chrome.runtime.sendMessage({ type: "trackerDetected", hostname });
           }
         } catch (e) {
@@ -66,7 +63,6 @@ async function initializeProtection() {
     chrome.storage.onChanged.addListener(handleSettingsChange);
     window.addEventListener('beforeunload', handlePageUnload);
     
-    console.log('SmartBlock protection initialized');
   } catch (error) {
     console.error('Failed to initialize protection:', error);
   }
@@ -80,7 +76,6 @@ window.XMLHttpRequest = function() {
     try {
       if (typeof url === 'string' && knownTrackers.some(tracker => url.includes(tracker))) {
         const hostname = (new URL(url)).hostname;
-        console.log("Tracker detected in XHR:", hostname);
         chrome.runtime.sendMessage({ type: "trackerDetected", hostname });
       }
     } catch (e) {
@@ -120,7 +115,6 @@ function startTrackingObserver() {
     
     isObserving = true;
     observerInitialized = true;
-    console.log('Resource tracking observer started');
     
     // Also check for existing resources
     performance.getEntriesByType('resource').forEach(handleResourceLoad);
@@ -246,7 +240,6 @@ function applyFingerprintProtection() {
       };
     }
     
-    console.log('Fingerprint protection applied');
   } catch (error) {
     console.error('Failed to apply fingerprint protection:', error);
   }
@@ -264,7 +257,6 @@ function handleSettingsChange(changes) {
       } else if (!newSettings.fingerprintProtection) {
         fingerprintProtectionEnabled = false;
         // Can't fully remove protection without page reload
-        console.log('Fingerprint protection will be disabled on next page load');
       }
     }
     
@@ -274,7 +266,6 @@ function handleSettingsChange(changes) {
         startTrackingObserver();
       } else if (!newSettings.trackerProtection && isObserving) {
         isObserving = false;
-        console.log('Tracker detection paused');
       }
     }
   }

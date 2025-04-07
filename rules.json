@@ -1,0 +1,16 @@
+[
+    {
+      "id": 1,
+      "priority": 1,
+      "action": {
+        "type": "redirect",
+        "redirect": {
+          "extensionPath": "/shortener_redirect.html"
+        }
+      },
+      "condition": {
+        "urlFilter": "||sb.link/*",
+        "resourceTypes": ["main_frame"]
+      }
+    }
+  ]

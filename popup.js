@@ -461,7 +461,6 @@ function initializeUrlShortenerTab() {
       }
     } catch (error) {
       // Clipboard access may be denied
-      console.log('Could not access clipboard');
     }
   });
 
