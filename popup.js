@@ -182,13 +182,13 @@ document.addEventListener('DOMContentLoaded', () => {
       // Sort and limit to top 5 trackers for visualization
       const topTrackers = trackerEntries
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);
+        .slice(0, 4);
       
       const totalCount = topTrackers.reduce((sum, [_, count]) => sum + count, 0);
       
       chartContainer.innerHTML = `
         <div class="chart-placeholder">
-          <div class="chart-title">Top 5 Trackers Detected</div>
+          <div class="chart-title">Top 4 Trackers Detected</div>
           <div class="chart-bars">
             ${topTrackers.map(([host, count]) => {
               const percentage = (count / totalCount * 100).toFixed(1);

@@ -16,7 +16,8 @@
     "contextMenus",
     "clipboardWrite",
     "clipboardRead",
-    "declarativeNetRequestWithHostAccess"
+    "declarativeNetRequestWithHostAccess",
+    "tabs"
   ],
   "declarative_net_request": {
   "rule_resources": [{
