@@ -481,14 +481,20 @@ function initializeUrlShortenerTab() {
       const expirationDays = parseInt(expirationSelect.value);
 
       // Send request to background script
-      const shortUrl = await chrome.runtime.sendMessage({
+      const response = await chrome.runtime.sendMessage({
         type: 'shortenUrl',
         url: url,
         expirationDays: expirationDays
       });
-
-      // Display result
-      shortUrlResult.textContent = shortUrl;
+      
+      if (response.success) {
+        shortUrlResult.textContent = response.shortUrl;
+        shortUrlResult.href = response.shortUrl;
+        resultContainer.style.display = 'block';
+      } else {
+        showNotification('Failed to shorten URL: ' + response.error, 'error');
+      }
+      
       resultContainer.style.display = 'block';
       
       // Reset input and button

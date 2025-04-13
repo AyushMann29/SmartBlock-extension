@@ -373,7 +373,6 @@ const STATIC_AD_SERVERS = [
 
 let currentRules = [];
 let isInitialized = false;
-let keepAliveInterval;
 let performanceStats = {
     dataSaved: 0,
     timeSaved: 0,
@@ -393,10 +392,10 @@ const generateRuleId = (domain) => {
 async function updateBlockLists() {
     try {
         const { userSettings } = await chrome.storage.local.get('userSettings');
-        const domainsToBlock = userSettings?.autoUpdateLists === false ?
-            STATIC_AD_SERVERS :
-            [...new Set([...STATIC_AD_SERVERS, ...(await fetchDynamicTrackerLists())])];
-        
+        const domainsToBlock = userSettings?.autoUpdateLists === false
+            ? STATIC_AD_SERVERS
+            : [...new Set([...STATIC_AD_SERVERS, ...(await fetchDynamicTrackerLists())])];
+
         await updateBlockingRules(domainsToBlock);
     } catch (error) {
         console.error('Failed to update block lists:', error);
@@ -443,6 +442,7 @@ async function updateBlockingRules(domainsToBlock) {
             removeRuleIds: currentRules.map(rule => rule.id),
             addRules: newRules
         });
+
         currentRules = newRules;
     } catch (error) {
         console.error('Rule update failed:', error);
@@ -487,6 +487,7 @@ function startKeepAlive() {
     });
 }
 
+// ✅ Cleaned-up message listener
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const handlers = {
         trackerDetected: async () => {
@@ -502,27 +503,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             await updateBlockLists();
             return { success: true };
         },
-        shortenUrl: async () => urlShortener.shortenUrl(request.url, request.expirationDays),
-        resolveShortUrl: async () => urlShortener.resolveUrl(request.hash),
-        getRecentUrls: async () => urlShortener.getAllUrls(),
-        deleteUrl: async () => urlShortener.deleteUrl(request.hash),
-        clearUrlHistory: async () => {
-            await chrome.storage.local.set({ urlMappings: {} });
-            return true;
+        shortenUrl: async () => {
+            try {
+                const shortUrl = await urlShortener.shortenUrl(request.url);
+                return { success: true, shortUrl }; // <- shortUrl is a string
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
         },
-        getShortenerStats: async () => urlShortener.getStats()
+        getShortenerStats: async () => urlShortener.getStats(),
+        resetShortenerStats: async () => urlShortener.resetStats()
     };
 
     if (handlers[request.type]) {
         handlers[request.type]()
             .then(sendResponse)
-            .catch(error => sendResponse({ 
-                success: false, 
-                error: error.message 
-            }));
-        return true;
+            .catch(error => sendResponse({ success: false, error: error.message }));
+        return true; // Keep message channel open for async
     }
 });
+
 
 async function handleTrackerDetection(hostname) {
     const { trackers = {} } = await chrome.storage.local.get('trackers');
@@ -530,9 +530,9 @@ async function handleTrackerDetection(hostname) {
     performanceStats.totalBlocked++;
     performanceStats.dataSaved += 50;
     performanceStats.timeSaved += 0.2;
-    
+
     await chrome.storage.local.set({ trackers });
-    
+
     const { userSettings } = await chrome.storage.local.get('userSettings');
     if (userSettings?.showNotifications && (
         STATIC_AD_SERVERS.includes(hostname) || trackers[hostname] > 10
@@ -564,7 +564,7 @@ async function initializeExtension() {
     }
 }
 
-// Performance Stats Functions
+// Performance Stats
 async function loadPerformanceStats() {
     const { stats } = await chrome.storage.local.get('stats');
     performanceStats = stats || { dataSaved: 0, timeSaved: 0, totalBlocked: 0 };

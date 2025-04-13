@@ -3,58 +3,66 @@
   "name": "SmartBlock & Tracker Detector",
   "version": "1.0",
   "description": "Combined ad blocker, tracker detector, and URL shortener.",
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvJEUPC0nK+213J6FJQiRTbOZYVkO/1U8DTlmyMuV8Jq+YEx0+YEJ5VXwvdtF/BdG5/T+3OQz0eBHrFHwcsBWUHn0AxIPvIAH0pBFXV6g/6xS1/5nuIR9AHIQUWgHYJ9BrW8fChVsVuuOj/yG2lcK39M2vj+Fpl4vJP/5J7y+wP724lFzuTQ25aBXDQW+R1EQYpWq7WGbKjQRVr43RmUXKzuLz5xCG1mWixGLvsCOHXgGapyi5C6KPkQ+eB0fYkl0eQyNiZYEWRkEI5qHe9jDzPOFxYVHjmRnSGD7Jfwt45IhUPTnWNFLkNuTHGvFmEkZLGiyPPVrA9XNX5G/7QIDAQAB",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "mannayush60@gmail.com",
+      "strict_min_version": "109.0"
+    }
+  },
 
   "permissions": [
     "storage",
-    "scripting",
     "webNavigation",
     "declarativeNetRequest",
-    "declarativeNetRequestFeedback",
     "alarms",
     "notifications",
     "contextMenus",
     "clipboardWrite",
     "clipboardRead",
-    "declarativeNetRequestWithHostAccess",
     "tabs"
   ],
-  "declarative_net_request": {
-  "rule_resources": [{
-    "id": "rules",
-    "enabled": true,
-    "path": "rules.json"
-  }]
-},
+
   "host_permissions": [
-    "*://*/*"
+    "*://*/*",
+    "https://api.shrtco.de/*"
   ],
+
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "rules",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+
   "background": {
-    "service_worker": "background.js",
+    "scripts": ["background.js"],
     "type": "module"
   },
+
   "action": {
     "default_popup": "popup.html",
     "default_icon": "icon.png"
   },
+
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
   ],
-  "web_accessible_resources": [{
-  "resources": [
-    "shortener_redirect.html", 
-    "icon.png"
+
+  "web_accessible_resources": [
+    {
+      "resources": ["shortener_redirect.html", "icon.png"],
+      "matches": ["<all_urls>"]
+    }
   ],
-  "matches": [
-   "*://*/*"
-  ]
-}],
-  
+
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+    "extension_pages": "script-src 'self'; object-src 'self';"
   }
 }
-
