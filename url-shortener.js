@@ -29,7 +29,7 @@ export async function initializeUrlShortener() {
  * @param {string} url - Original URL to shorten
  * @returns {Promise<string>} - Shortened URL
  */
-const TINYURL_API_KEY = "kqzNnxD7t3nXDx8gXUVjxsRuTLeRAieXr5uBXIMuMpo8DPIWLuCx9JsjnfuP"; // Replace this with your actual key
+const TINYURL_API_KEY = "KEY_HERE"; // Replace this with your actual key
 
 export async function shortenUrl(url) {
     try {
